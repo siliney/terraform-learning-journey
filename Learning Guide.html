@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>14-Day Terraform + Linux Cloud Admin Training Guide (AWS/Azure)</title>
+  <style>
+    :root{
+      --bg:#0b1220; --card:#101a33; --muted:#93a4c7; --text:#e8eefc;
+      --accent:#4dd4ac; --warn:#ffcc66; --bad:#ff6b6b; --line:#1f2b4a;
+      --code:#0a1020;
+    }
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#070b14);color:var(--text);font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Arial;}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    header{padding:28px 16px;border-bottom:1px solid var(--line);background:rgba(16,26,51,.6);backdrop-filter: blur(8px);position:sticky;top:0;z-index:10}
+    header .wrap, main .wrap, footer .wrap{max-width:1100px;margin:0 auto}
+    h1{margin:0 0 6px;font-size:22px}
+    .sub{color:var(--muted);margin:0}
+    main{padding:18px 16px 48px}
+    .grid{display:grid;grid-template-columns: 320px 1fr;gap:16px}
+    @media (max-width: 980px){.grid{grid-template-columns:1fr}}
+    nav{border:1px solid var(--line);background:rgba(16,26,51,.65);border-radius:16px;padding:14px;position:sticky;top:96px;align-self:start}
+    nav h2{font-size:14px;margin:0 0 10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+    nav ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+    nav li a{display:block;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+    nav li a:hover{background:rgba(77,212,172,.08);border-color:rgba(77,212,172,.25)}
+    section{border:1px solid var(--line);background:rgba(16,26,51,.65);border-radius:16px;padding:16px;margin-bottom:16px}
+    h2{margin:0 0 10px;font-size:18px}
+    h3{margin:18px 0 8px;font-size:15px}
+    .pill{display:inline-block;padding:2px 10px;border-radius:999px;border:1px solid rgba(77,212,172,.35);color:var(--accent);font-size:12px;margin-left:8px}
+    .note{border-left:3px solid var(--accent);padding:10px 12px;background:rgba(77,212,172,.08);border-radius:10px;margin:10px 0;color:var(--text)}
+    .warn{border-left:3px solid var(--warn);background:rgba(255,204,102,.08)}
+    .bad{border-left:3px solid var(--bad);background:rgba(255,107,107,.08)}
+    code,kbd{font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    pre{background:var(--code);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;overflow:auto}
+    pre code{color:#e8eefc}
+    details{border:1px dashed rgba(255,255,255,.18);border-radius:12px;padding:10px 12px;margin:10px 0;background:rgba(255,255,255,.03)}
+    summary{cursor:pointer;color:var(--accent);font-weight:600}
+    .checklist{display:grid;grid-template-columns:1fr;gap:8px;margin:10px 0}
+    .task{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
+    .task input{margin-top:3px}
+    .muted{color:var(--muted)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media(max-width:860px){.two{grid-template-columns:1fr}}
+    .small{font-size:13px;color:var(--muted)}
+    footer{border-top:1px solid var(--line);padding:20px 16px;color:var(--muted)}
+    .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .btn{display:inline-block;padding:8px 12px;border-radius:12px;border:1px solid rgba(77,212,172,.35);background:rgba(77,212,172,.08)}
+    .btn:hover{background:rgba(77,212,172,.14)}
+    .table{width:100%;border-collapse:separate;border-spacing:0 8px}
+    .table td,.table th{padding:10px 12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
+    .table th{color:var(--muted);text-align:left}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>14-Day Terraform + Linux Cloud Admin Training Guide</h1>
+    <p class="sub">Hands-on daily plan + portfolio lab (AWS or Azure). Target: job-ready Linux admin + IaC skills in 2 weeks.</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap grid">
+    <nav aria-label="Table of contents">
+      <h2>Contents</h2>
+      <ul>
+        <li><a href="#how-to-use">How to use this guide</a></li>
+        <li><a href="#prereqs">Prerequisites & Setup</a></li>
+        <li><a href="#security">Safety rules (don’t get billed / locked out)</a></li>
+        <li><a href="#daybyday">14-Day Checklist</a></li>
+        <li><a href="#lab">Terraform + Linux Cloud Lab Project</a></li>
+        <li><a href="#repo">GitHub repo structure</a></li>
+        <li><a href="#verify">Verification & troubleshooting drills</a></li>
+        <li><a href="#extras">Optional upgrades (after Day 14)</a></li>
+      </ul>
+      <div class="btnrow">
+        <a class="btn" href="#daybyday">Start Day 1</a>
+        <a class="btn" href="#lab">Jump to Lab</a>
+      </div>
+      <p class="small">Tip: In Chrome/Edge, use <kbd>Ctrl</kbd>+<kbd>F</kbd> to find a command quickly.</p>
+    </nav>
+
+    <div>
+      <section id="how-to-use">
+        <h2>How to use this guide <span class="pill">1.5–2 hrs/day</span></h2>
+        <div class="note">
+          <b>Fastest path:</b> deploy real infra → SSH into Linux → harden it → run a service → automate → destroy.
+          Repeat daily. That repetition is what makes Terraform + Linux “stick”.
+        </div>
+        <ul>
+          <li><b>Pick one cloud:</b> AWS or Azure. (You can do both later.)</li>
+          <li><b>Always practice lifecycle:</b> <code>plan → apply → verify → destroy</code>.</li>
+          <li><b>Document as you go:</b> screenshots, commands, errors, fixes. That becomes your GitHub portfolio.</li>
+        </ul>
+      </section>
+
+      <section id="prereqs">
+        <h2>Prerequisites & Setup</h2>
+
+        <div class="two">
+          <div>
+            <h3>Local machine</h3>
+            <div class="checklist">
+              <label class="task"><input type="checkbox" /> Install Terraform</label>
+              <label class="task"><input type="checkbox" /> Install Git</label>
+              <label class="task"><input type="checkbox" /> Install an SSH client (Windows: built-in OpenSSH ok)</label>
+              <label class="task"><input type="checkbox" /> Install VS Code (recommended)</label>
+            </div>
+
+            <details>
+              <summary>Check Terraform + SSH</summary>
+              <pre><code>terraform version
+ssh -V
+git --version</code></pre>
+            </details>
+          </div>
+
+          <div>
+            <h3>Cloud account</h3>
+            <div class="checklist">
+              <label class="task"><input type="checkbox" /> AWS account + IAM user (programmatic access) <span class="muted">or</span> Azure subscription + Azure CLI</label>
+              <label class="task"><input type="checkbox" /> Create an SSH key pair for VM login</label>
+              <label class="task"><input type="checkbox" /> Decide region (NZ users often use AU regions)</label>
+            </div>
+
+            <details>
+              <summary>Recommended region choices</summary>
+              <ul>
+                <li>AWS: <code>ap-southeast-2</code> (Sydney)</li>
+                <li>Azure: <code>australiaeast</code> (Sydney)</li>
+              </ul>
+            </details>
+          </div>
+        </div>
+
+        <div class="note warn">
+          If you have no free credits, keep resources <b>tiny</b> and always <b>destroy</b> after each session.
+          Use <code>terraform destroy</code> every day unless you’re continuing the same lab.
+        </div>
+      </section>
+
+      <section id="security">
+        <h2>Safety rules (avoid bills + avoid lockouts)</h2>
+        <div class="checklist">
+          <label class="task"><input type="checkbox" /> Limit SSH access to <b>your IP only</b> (security group / NSG)</label>
+          <label class="task"><input type="checkbox" /> Never commit secrets: no keys, tokens, passwords into GitHub</label>
+          <label class="task"><input type="checkbox" /> Prefer <b>SSH keys</b> (not passwords)</label>
+          <label class="task"><input type="checkbox" /> Enable auto-shutdown (optional) OR destroy when done</label>
+        </div>
+
+        <details>
+          <summary>Quick “don’t commit secrets” checklist</summary>
+          <ul>
+            <li>Use <code>terraform.tfvars</code> locally, add it to <code>.gitignore</code></li>
+            <li>Never push <code>*.pem</code> or <code>id_rsa</code></li>
+            <li>Keep state file private if it contains sensitive data (later: remote state with encryption)</li>
+          </ul>
+        </details>
+      </section>
+
+      <section id="daybyday">
+        <h2>14-Day Terraform Checklist</h2>
+
+        <details open>
+          <summary>Day 1 — Terraform Basics (init/plan/apply/destroy)</summary>
+          <div class="checklist">
+            <label class="task"><input type="checkbox" /> Install Terraform and verify <code>terraform version</code></label>
+            <label class="task"><input type="checkbox" /> Create a new folder: <code>terraform-linux-cloud-lab</code></label>
+            <label class="task"><input type="checkbox" /> Create minimal files: <code>providers.tf</code>, <code>main.tf</code></label>
+            <label class="task"><input type="checkbox" /> Run: <code>terraform init</code>, then <code>terraform plan</code></label>
+          </div>
+          <div class="note">
+            Today is about workflow muscle memory, not building big infra yet.
+          </div>
+          <pre><code># Standard workflow (use daily)
+terraform fmt
+terraform validate
+terraform init
+terraform plan
+terraform apply
+terraform destroy</code></pre>
+        </details>
+
+        <details>
+          <summary>Day 2 — Authentication & Provider (AWS or Azure)</summary>
+          <p class="muted">Pick one cloud for the 14 days. You can duplicate later for the other.</p>
+
+          <div class="two">
+            <div>
+              <h3>AWS (example)</h3>
+              <pre><code># providers.tf
+terraform {
+  required_version = "&gt;= 1.6.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~&gt; 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+}</code></pre>
+            </div>
+
+            <div>
+              <h3>Azure (example)</h3>
+              <pre><code># providers.tf
+terraform {
+  required_version = "&gt;= 1.6.0"
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~&gt; 3.0"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="checklist">
+            <label class="task"><input type="checkbox" /> Add <code>variables.tf</code> for region</label>
+            <label class="task"><input type="checkbox" /> Run <code>terraform init</code> successfully</label>
+          </div>
+
+          <details>
+            <summary>variables.tf (shared idea)</summary>
+            <pre><code>variable "aws_region" {
+  type    = string
+  default = "ap-southeast-2"
+}</code></pre>
+          </details>
+        </details>
+
+        <details>
+          <summary>Day 3 — Create a Linux VM (Compute)</summary>
+          <div class="note warn">
+            Keep the VM small. Make sure SSH is restricted to your IP.
+          </div>
+
+          <h3>AWS (concept)</h3>
+          <ul>
+            <li>Create: security group + key pair reference + EC2 instance</li>
+          </ul>
+
+          <h3>Azure (concept)</h3>
+          <ul>
+            <li>Create: resource group + vnet/subnet + nsg + public ip + nic + vm</li>
+          </ul>
+
+          <div class="checklist">
+            <label class="task"><input type="checkbox" /> Apply infra and get public IP</label>
+            <label class="task"><input type="checkbox" /> SSH into VM using key</label>
+            <label class="task"><input type="checkbox" /> Run Linux checks: <code>uname -a</code>, <code>uptime</code>, <code>df -h</code></label>
+          </div>
+
+          <details>
+            <summary>SSH template</summary>
+            <pre><code>ssh -i path/to/key.pem ubuntu@&lt;PUBLIC_IP&gt;</code></pre>
+          </details>
+        </details>
+
+        <details>
+          <summary>Day 4 — Variables & tfvars (Make it configurable)</summary>
+          <div class="checklist">
+            <label class="task"><input type="checkbox" /> Add variables: region, vm_size, allowed_ssh_cidr, tags</label>
+            <label class="task"><input type="checkbox" /> Create <code>terraform.tfvars</code> locally</label>
+            <label class="task"><input type="checkbox" /> Use <code>terraform plan</code> to confirm variables work</label>
+          </div>
+
+          <details>
+            <summary>Example variables patterns</summary>
+            <pre><code>variable "allowed_ssh_cidr" {
+  type        = string
+  description = "Your public IP in CIDR form, e.g. 203.0.113.10/32"
+}
+
+variable "env" {
+  type    = string
+  default = "dev"
+}
+
+variable "tags" {
+  type    = map(string)
+  default = {
+    Project = "terraform-linux-cloud-lab"
+  }
+}</code></pre>
+          </details>
+        </details>
+
+        <details>
+          <summary>Day 5 — Outputs (Show what matters)</summary>
+          <div class="checklist">
+            <label class="task"><input type="checkbox" /> Output public IP</label>
+            <label class="task"><input type="checkbox" /> Output SSH command helper (string output)</label>
+            <label class="task"><input type="checkbox" /> Output VM name / resource id</label>
+          </div>
+
+          <details>
+            <summary>Outputs example</summary>
+            <pre><code>output "public_ip" {
+  value = aws_instance.linux.public_ip
+}
+
+output "ssh_hint" {
+  value = "ssh -i ./keys/server.pem ubuntu@${aws_instance.linux.public_ip}"
+}</code></pre>
+          </details>
+        </details>
+
+        <details>
+          <summary>Day 6 — State & Drift (Understand what Terraform remembers)</summary>
+          <div class="checklist">
+            <label class="task"><input type="checkbox" /> Locate <code>terraform.tfstate</code> and understand what it stores</label>
+            <label class="task"><input type="checkbox" /> Run <code>terraform show</code> and inspect resources</label>
+            <label class="task"><input type="checkbox" /> Change one setting (tag/name) and observe plan diff</label>
+          </div>
+
+          <details>
+            <summary>Core commands</summary>
+            <pre><code>terraform show
+terraform state list
+terraform state show &lt;resource.address&gt;</code></pre>
+          </details>
+        </details>
+
+        <details>
+          <summary>Day 7 — Rebuild Day (destroy → apply clean)</summary>
+          <div class="checklist">
+            <label class="task"><input type="checkbox" /> Destroy everything</label>
+            <label class="task"><input type="checkbox" /> Re-apply from scratch</label>
+            <label class="task"><input type="checkbox" /> SSH in again and verify (same steps as Day 3)</label>
+          </div>
+          <div class="note">
+            If you can rebuild confidently, you’re already ahead of many “click-ops” engineers.
+          </div>
+        </details>
+
+        <details>
+          <summary>Day 8 — Networking (VPC/VNet + Subnet + Security)</summary>
+          <div class="checklist">
+            <label class="task"><input type="checkbox" /> Create network resources in Terraform</label>
+            <label class="task"><input type="checkbox" /> Create rules: SSH (your IP), HTTP (0.0.0.0/0)</label>
+            <label class="task"><input type="checkbox" /> Attach VM to subnet and security controls</label>
+          </div>
+          <div class="note warn">
+            SSH open to the world is a common beginner mistake. Always restrict it to <code>/32</code> CIDR.
+          </div>
+        </details>
+
+        <details>
+          <summary>Day 9 — Split files & clean structure (readability matters)</summary>
+          <div class="checklist">
+            <label class="task"><input type="checkbox" /> Split code into: <code>network.tf</code>, <code>compute.tf</code>, <code>security.tf</code></label>
+            <label class="task"><input type="checkbox" /> Add <code>locals</code> for naming convention</label>
+            <label class="task"><input type="checkbox" /> Run: <code>terraform fmt</code> and commit (no secrets)</label>
+          </div>
+
+          <details>
+            <summary>Locals naming pattern example</summary>
+            <pre><code>locals {
+  name = "${var.project}-${var.env}"
+}</code></pre>
+          </details>
+        </details>
+
+        <details>
+          <summary>Day 10 — Provisioning (install Nginx automatically)</summary>
+          <div class="checklist">
+            <label class="task"><input type="checkbox" /> Create a script <code>scripts/setup.sh</code> that installs Nginx</label>
+            <label class="task"><input type="checkbox" /> Use Terraform to upload and run it (remote-exec)</label>
+            <label class="task"><input type="checkbox" /> Verify in browser: <code>http://&lt;PUBLIC_IP&gt;</code></label>
+          </div>
+
+          <details>
+            <summary>Example setup.sh (Ubuntu)</summary>
+            <pre><code>#!/usr/bin/env bash
+set -euo pipefail
+
+sudo apt-get update -y
+sudo apt-get install -y nginx
+sudo systemctl enable nginx
+sudo systemctl start nginx
+
+echo "OK: Nginx installed on $(hostname) at $(date)" | sudo tee /var/www/html/index.html</code></pre>
+          </details>
+
+          <div class="note warn">
+            Provisioners are okay for learning, but in real jobs many teams prefer cloud-init, Ansible, or images.
+            Still: understanding provisioners helps you bridge Terraform + Linux fast.
+          </div>
+        </details>
+
+        <details>
+          <summary>Day 11 — Linux Hardening (SSH + firewall + users)</summary>
+          <div class="checklist">
+            <label class="task"><input type="checkbox" /> Create an admin user (non-root)</label>
+            <label class="task"><input type="checkbox" /> Disable root SSH login</label>
+            <label class="task"><input type="checkbox" /> Enable firewall (UFW on Ubuntu) and allow SSH/HTTP</label>
+            <label class="task"><input type="checkbox" /> Verify: you can still SSH after changes</label>
+          </div>
+
+          <details>
+            <summary>Hardening commands (Ubuntu example)</summary>
+            <pre><code># Create admin user
+sudo adduser adminuser
+sudo usermod -aG sudo adminuser
+
+# SSH hardening
+sudo sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+sudo systemctl reload ssh
+
+# Firewall
+sudo ufw allow OpenSSH
+sudo ufw allow 'Nginx Full'
+sudo ufw --force enable
+sudo ufw status</code></pre>
+          </details>
+
+          <div class="note bad">
+            <b>Lockout warning:</b> Keep your current SSH session open while testing a second SSH session.
+            If you break SSH, you may need cloud console access to recover.
+          </div>
+        </details>
+
+        <details>
+          <summary>Day 12 — Modules (make it reusable)</summary>
+          <div class="checklist">
+            <label class="task"><input type="checkbox" /> Create <code>modules/linux_vm</code></label>
+            <label class="task"><input type="checkbox" /> Move VM + security + provisioning into module</label>
+            <label class="task"><input type="checkbox" /> Module inputs: env, tags, ssh_cidr, vm_size</label>
+          </div>
+
+          <details>
+            <summary>Module call pattern (concept)</summary>
+            <pre><code>module "linux_vm" {
+  source           = "./modules/linux_vm"
+  env              = var.env
+  allowed_ssh_cidr  = var.allowed_ssh_cidr
+  tags             = var.tags
+}</code></pre>
+          </details>
+        </details>
+
+        <details>
+          <summary>Day 13 — Environments (dev/test/prod with tfvars)</summary>
+          <div class="checklist">
+            <label class="task"><input type="checkbox" /> Create <code>env/dev.tfvars</code>, <code>env/test.tfvars</code></label>
+            <label class="task"><input type="checkbox" /> Use different VM sizes or tags per env</label>
+            <label class="task"><input type="checkbox" /> Apply dev, destroy dev; then apply test</label>
+          </div>
+
+          <details>
+            <summary>Apply with tfvars</summary>
+            <pre><code>terraform plan -var-file=env/dev.tfvars
+terraform apply -var-file=env/dev.tfvars
+
+terraform destroy -var-file=env/dev.tfvars</code></pre>
+          </details>
+        </details>
+
+        <details>
+          <summary>Day 14 — Documentation & Portfolio Finish</summary>
+          <div class="checklist">
+            <label class="task"><input type="checkbox" /> Write <code>README.md</code> explaining what you built</label>
+            <label class="task"><input type="checkbox" /> Add diagrams (even simple ASCII) + screenshots</label>
+            <label class="task"><input type="checkbox" /> Add troubleshooting notes (2–3 real issues you solved)</label>
+            <label class="task"><input type="checkbox" /> Destroy everything and confirm cloud console is clean</label>
+          </div>
+          <div class="note">
+            Recruiters love README files that show: <b>architecture</b>, <b>security</b>, <b>automation</b>, and <b>how to run</b>.
+          </div>
+        </details>
+      </section>
+
+      <section id="lab">
+        <h2>Terraform + Linux Cloud Lab Project <span class="pill">Portfolio-ready</span></h2>
+        <p class="muted"><b>Project title:</b> Secure Linux Web Server on Cloud (Terraform-managed)</p>
+
+        <h3>Lab goals</h3>
+        <ul>
+          <li>Deploy network + Linux VM using Terraform</li>
+          <li>Harden SSH, users, firewall</li>
+          <li>Install and run Nginx automatically</li>
+          <li>Implement backups + basic monitoring scripts</li>
+          <li>Practice recovery drills (break/fix)</li>
+        </ul>
+
+        <h3>Architecture</h3>
+        <pre><code>Local PC (Terraform + SSH)
+   |
+   | terraform apply
+   v
+Cloud
+ ├─ Network (VPC/VNet + Subnet)
+ ├─ Security (SG/NSG: SSH yourIP/32, HTTP open)
+ └─ Linux VM
+     ├─ SSH hardened
+     ├─ Firewall enabled
+     ├─ Nginx installed
+     ├─ Backup cron
+     └─ Logs + monitoring checks</code></pre>
+
+        <h3>What you will implement</h3>
+        <table class="table" role="table" aria-label="Lab deliverables">
+          <thead>
+            <tr><th>Component</th><th>Deliverable</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Terraform</td><td>Network + VM + security + outputs + modules</td></tr>
+            <tr><td>Linux admin</td><td>User creation, SSH hardening, firewall rules, service management</td></tr>
+            <tr><td>Automation</td><td>Setup script, backup script, cron schedule</td></tr>
+            <tr><td>Proof</td><td>Browser-accessible web page + SSH verification + logs</td></tr>
+          </tbody>
+        </table>
+
+        <details>
+          <summary>Recommended Linux scripts (put in /scripts)</summary>
+          <pre><code># scripts/backup.sh (example)
+#!/usr/bin/env bash
+set -euo pipefail
+
+TS="$(date +%Y%m%d-%H%M%S)"
+DEST="/opt/backups"
+sudo mkdir -p "$DEST"
+
+sudo tar -czf "$DEST/etc-$TS.tar.gz" /etc
+sudo tar -czf "$DEST/www-$TS.tar.gz" /var/www
+
+echo "Backup complete: $TS" | sudo tee -a "$DEST/backup.log"</code></pre>
+
+          <pre><code># scripts/monitor.sh (example)
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "== Health Check $(date) =="
+systemctl is-active nginx || (echo "Nginx is NOT active" &amp;&amp; exit 2)
+df -h | head -n 5
+free -h | head -n 5
+echo "OK"</code></pre>
+        </details>
+
+        <details>
+          <summary>Cron example (daily backup + hourly monitor)</summary>
+          <pre><code># Edit crontab
+crontab -e
+
+# Daily 2:00 AM backup
+0 2 * * * /usr/bin/bash /opt/scripts/backup.sh &gt;&gt; /opt/backups/cron.log 2&gt;&amp;1
+
+# Hourly monitor
+0 * * * * /usr/bin/bash /opt/scripts/monitor.sh &gt;&gt; /opt/backups/health.log 2&gt;&amp;1</code></pre>
+        </details>
+
+        <div class="note warn">
+          For a “clean” portfolio, store scripts in your repo but copy them to the VM during provisioning.
+          Keep your private key OUT of the repo.
+        </div>
+      </section>
+
+      <section id="repo">
+        <h2>GitHub Repo Structure (Recommended)</h2>
+        <pre><code>terraform-linux-cloud-lab/
+├── README.md
+├── providers.tf
+├── variables.tf
+├── outputs.tf
+├── network.tf
+├── compute.tf
+├── security.tf
+├── env/
+│   ├── dev.tfvars
+│   └── test.tfvars
+├── modules/
+│   └── linux_vm/
+│       ├── main.tf
+│       ├── variables.tf
+│       └── outputs.tf
+├── scripts/
+│   ├── setup.sh
+│   ├── backup.sh
+│   └── monitor.sh
+├── docs/
+│   ├── architecture.md
+│   ├── security.md
+│   └── recovery.md
+└── .gitignore</code></pre>
+
+        <details>
+          <summary>.gitignore essentials</summary>
+          <pre><code># Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+
+# Keys
+*.pem
+id_rsa
+id_rsa.pub
+
+# OS/editor
+.DS_Store
+.vscode/</code></pre>
+        </details>
+      </section>
+
+      <section id="verify">
+        <h2>Verification & Troubleshooting Drills</h2>
+
+        <h3>Verification checklist (every time)</h3>
+        <div class="checklist">
+          <label class="task"><input type="checkbox" /> Terraform apply succeeds (no errors)</label>
+          <label class="task"><input type="checkbox" /> Output shows public IP</label>
+          <label class="task"><input type="checkbox" /> SSH works using key</label>
+          <label class="task"><input type="checkbox" /> <code>systemctl status nginx</code> shows active</label>
+          <label class="task"><input type="checkbox" /> Browser loads <code>http://PUBLIC_IP</code></label>
+          <label class="task"><input type="checkbox" /> Firewall is enabled and rules are correct</label>
+        </div>
+
+        <details>
+          <summary>Common issues → quick fixes</summary>
+          <ul>
+            <li><b>SSH timeout:</b> check SG/NSG allows your IP, and VM has public IP.</li>
+            <li><b>Permission denied (publickey):</b> wrong username (Ubuntu often <code>ubuntu</code>), wrong key file, bad permissions on key file.</li>
+            <li><b>HTTP not loading:</b> open port 80 in SG/NSG, ensure Nginx running.</li>
+            <li><b>Provisioner fails:</b> SSH connection not ready; add retry/wait or use cloud-init.</li>
+          </ul>
+        </details>
+
+        <h3>Break/Fix drills (do at least 3 times)</h3>
+        <div class="checklist">
+          <label class="task"><input type="checkbox" /> Stop Nginx and recover: <code>sudo systemctl stop nginx</code> → start again</label>
+          <label class="task"><input type="checkbox" /> Misconfigure firewall (temporarily) → fix it</label>
+          <label class="task"><input type="checkbox" /> Delete a file in <code>/var/www/html</code> → restore from backup</label>
+        </div>
+      </section>
+
+      <section id="extras">
+        <h2>Optional upgrades (after Day 14)</h2>
+        <div class="two">
+          <div>
+            <h3>Terraform upgrades</h3>
+            <ul>
+              <li>Remote state (S3 + DynamoDB / Azure Storage)</li>
+              <li>Workspaces or separate state per environment</li>
+              <li>CI: <code>terraform fmt/validate/plan</code> via GitHub Actions</li>
+              <li>Replace provisioners with cloud-init or Ansible</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Linux upgrades</h3>
+            <ul>
+              <li>Fail2ban + rate limiting</li>
+              <li>Log rotation & centralized logging</li>
+              <li>HTTPS via Let’s Encrypt (certbot)</li>
+              <li>Monitoring: node_exporter + Grafana (later)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="note">
+          If you want, I can generate a <b>complete working Terraform codebase</b> for either:
+          <b>AWS (VPC + EC2 + SG + user_data)</b> or <b>Azure (VNet + VM + NSG + cloud-init)</b>,
+          formatted exactly to match the repo structure above.
+        </div>
+      </section>
+
+      <section>
+        <h2>Next steps (tell me one option)</h2>
+        <div class="checklist">
+          <label class="task"><input type="checkbox" /> Option A: Generate full AWS Terraform code (Sydney) + user_data (recommended fast path)</label>
+          <label class="task"><input type="checkbox" /> Option B: Generate full Azure Terraform code (Australia East) + cloud-init</label>
+          <label class="task"><input type="checkbox" /> Option C: Generate both AWS + Azure in separate folders for multi-cloud portfolio</label>
+        </div>
+        <p class="small">Reply with: <b>A</b>, <b>B</b>, or <b>C</b>, and I’ll output the full project code in the same HTML guide style (copy/paste ready).</p>
+      </section>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>Made for: Linux Administration + Terraform + Cloud (portfolio-ready)</div>
+    <div class="small">Reminder: Always destroy resources to avoid unexpected cloud charges.</div>
+  </div>
+</footer>
+</body>
+</html>

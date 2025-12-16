@@ -1,0 +1,29 @@
+{
+    "name": "Terraform Development",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+        "ghcr.io/devcontainers/features/terraform:1": {},
+        "ghcr.io/devcontainers/features/aws-cli:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "amazonwebservices.aws-toolkit-vscode",
+                "Bridgecrew.checkov",
+                "hashicorp.hcl",
+                "hashicorp.terraform",
+                "hashicorp.sentinel",
+                "ms-kubernetes-tools.vscode-kubernetes-tools",
+                "ms-vscode.makefile-tools",
+                "ms-vscode.vscode-node-azure-pack",
+                "eamodio.gitlens",
+                "ms-vscode-remote.remote-containers"
+            ],
+            "settings": {
+                "editor.formatOnSave": true
+            }
+        }
+    },
+    "remoteUser": "vscode"
+}
